@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import {ChatClient} from "./chat-client.model";
 import {ChatMessage} from "./chat-message.model";
+import {ChatClient} from "./chat-client.model";
+
 
 @Injectable()
 export class ChatService {
@@ -37,5 +38,16 @@ export class ChatService {
 
     deleteClient(id: string): void {
         this.clients = this.clients.filter((c) => c.id !== id);
+    }
+
+
+    updateTyping(typing: boolean, id: string): ChatClient {
+        const chatClient = this.clients.find((c) => c.id === id);
+        if (chatClient && chatClient.typing !== typing)
+        {
+            chatClient.typing = typing;
+            return chatClient;
+        }
+        return undefined;
     }
 }

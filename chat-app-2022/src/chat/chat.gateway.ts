@@ -24,6 +24,17 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect{
         this.server.emit('newMessage', chatMessage);
     }
 
+    @SubscribeMessage('typing')
+    handleTypingEvent(
+                    @MessageBody() typing: boolean,
+                    @ConnectedSocket() client: Socket,
+    ): void {
+        const chatClient = this.chatService.updateTyping(typing, client.id);
+        if (chatClient){
+            this.server.emit('clientTyping', chatClient);
+        }
+    }
+
     @SubscribeMessage('nickname')
     handleNickNameEvent(
         @MessageBody() nickname: string,
@@ -38,7 +49,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect{
                 client.emit('welcome', welcome)
                 this.server.emit('clients', this.chatService.getClients());
             }catch (e){
-                client._error(e);
+                client._error(e.message);
             }
 
 
